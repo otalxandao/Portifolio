@@ -14,39 +14,27 @@ headers = {
     "Content-Type": "application/json",
 }
 
-# Executa a primeira consulta para obter os IDs dos cards
+# Executa a consulta para obter as informações dos cards
 response = requests.post(url, json={"query": cards_query}, headers=headers)
 data = response.json()
 
-if "data" in data and "allCards" in data["data"]:
-    cards = data["data"]["allCards"]["edges"]
+if "data" in data and "cards" in data["data"]:
+    cards = data["data"]["cards"]["edges"]
     
-    card_ids = []
+    card_info_data = []
     
     for card in cards:
         card_id = card["node"]["id"]
-        card_ids.append({"ID do Card": card_id})
+        current_phase = card["node"]["current_phase"]["name"]
         
-    # Consulta para obter informações adicionais sobre cada card e criar um DataFrame
-    card_info_data = []
-    
-    for card_id in card_ids:
-        card_id_value = card_id["ID do Card"]
-        card_info_query = f'{{ card(id: {card_id_value}) {{ fields {{ name value }} }} }}'
+        fields = card["node"]["fields"]
+        field_info = {field["name"]: field["value"] for field in fields}
         
-        response = requests.post(url, json={"query": card_info_query}, headers=headers)
-        card_info = response.json()
+        card_info_data.append({"ID do Card": card_id, "current_phase": current_phase, **field_info})
         
-        if "data" in card_info and "card" in card_info["data"]:
-            card_info = card_info["data"]["card"]["fields"]
-            card_info_data.append({"ID do Card": card_id_value, **{field["name"]: field["value"] for field in card_info}})
-        else:
-            print(f"Erro ao buscar informações do card com ID {card_id_value}.")
-
     # Crie um DataFrame com os dados coletados
     df = pd.DataFrame(card_info_data)
 else:
-    print("Erro ao buscar IDs de cards.")
-
+    print("Erro ao buscar informações dos cards.")
 
 df.to_excel(path, index=False)
