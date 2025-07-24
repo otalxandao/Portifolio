@@ -18,10 +18,10 @@ Extrair dados de arquivos PDF de forma automatizada e organizá-los em um banco 
 ### 🚀 Tecnologias
 - `PyPDF2` / `pdfplumber`
 - `pandas`
-- `SQLAlchemy` ou `psycopg2` (dependendo da implementação)
+- `SQLAlchemy` 
 
 ### 📁 Arquivo principal:
-- `pdf_to_excel.py` *(pode renomear para `pdf_to_db.py` caso o script atual já envie direto ao banco)*
+- `pdf_to_excel.py` 
 
 ---
 
